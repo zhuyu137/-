@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const compression = require('compression');
 const express = require('express');
 const http = require('http'); // 必须加在最前面！
 const cors = require('cors');
@@ -8,6 +9,7 @@ const axios = require('axios');
 const WebSocket = require('ws');
 
 const app = express();
+app.use(compression());
 app.use(cors());
 // 解析JSON请求体
 app.use(express.json());
@@ -447,5 +449,52 @@ app.delete('/api/itinerary/:id', async (req, res) => {
     res.json({ code: 200, message: '删除行程成功', data: null });
   } catch (e) {
     res.status(500).json({ code: 500, message: '删除行程失败', data: null });
+  }
+});
+// 获取用户历史行程接口（第五周任务）
+app.get('/api/itinerary', async (req, res) => {
+  try {
+    const { user_id } = req.query;
+
+    // 校验参数
+    if (!user_id) {
+      return res.status(400).json({
+        code: 400,
+        message: 'user_id 不能为空',
+        data: null
+      });
+    }
+
+    // 从数据库查询该用户的所有行程，按 day 升序排列
+    const [rows] = await pool.query(
+      'SELECT * FROM itinerary WHERE user_id = ? ORDER BY day ASC',
+      [user_id]
+    );
+
+    // 把 JSON 字符串转回对象，方便前端使用
+    const formattedData = rows.map(row => ({
+      id: row.id,
+      user_id: row.user_id,
+      day: row.day,
+      poi_list: JSON.parse(row.poi_list),
+      routes: JSON.parse(row.routes),
+      total_distance: row.total_distance,
+      total_duration: row.total_duration,
+      created_at: row.created_at
+    }));
+
+    res.json({
+      code: 200,
+      message: '获取历史行程成功',
+      data: formattedData
+    });
+
+  } catch (err) {
+    console.error('获取历史行程失败:', err);
+    res.status(500).json({
+      code: 500,
+      message: '服务器错误',
+      data: null
+    });
   }
 });
