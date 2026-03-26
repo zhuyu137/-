@@ -1,0 +1,14 @@
+name: travel-ai
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9
+  - flask=2.3.3
+  - requests=2.31.0
+  - flask-cors=4.0.0
+  - pip
+  - pip:
+    - flask==2.3.3
+    - requests==2.31.0
+    - flask-cors==4.0.0
