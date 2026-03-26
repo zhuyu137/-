@@ -38,6 +38,7 @@ lib64/
 parts/
 sdist/
 var/
+wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -53,6 +54,12 @@ var/
 Thumbs.db
 Desktop.ini
 
+# 环境配置
+.env
+.env.local
+.env.*.local
+config_local.py
+
 # 日志文件
 *.log
 logs/
@@ -62,8 +69,3 @@ logs/
 *.temp
 *.bak
 *.backup
-
-# 密钥文件
-.env
-.env.local
-.env.*.local
